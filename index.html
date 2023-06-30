@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <nav>
+      <div class="row">
+        <div class="nav__container">
+          <h1>Welcome to Hazerin's Anime finder!</h1>
+          <h2>Find here some fast recommendation based on your interests.</h2>
+          <div class="header__presentation--input">
+            <input
+              class="search_bar"
+              type="text"
+              placeholder="Search by name..."
+            />
+            <button class="btn header__btn">Get Started</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="row">
+      <div class="filters">
+      <div class="slidecontainer">
+        <h3>Release date (months ago)</h3>
+        <div class="values">
+          <span id="range1">0</span>
+          <!-- &dash; rappresenta un trattino 
+          span è un elemento inline, non va a capo da solo-->
+          <span>&dash;</span>
+          <span id="range2">240</span>
+        </div>
+        <div class="input__container">
+          <div class="slider-track"></div>
+          <input type="range" min="0" max="240" value="0" class="slider" id="myRange1" oninput="slideOne()"/>
+          <input type="range" min="0" max="240" value="240" class="slider" id="myRange2" oninput="slideTwo()"/>
+        </div>
+      </div>
+      <div class="genres">
+        <form autocomplete="off" action="/action_page.php">
+          <div class="autocomplete">
+            <input id="myGenres" type="text" name="Genres" placeholder="Search for genres...">
+          </div>
+          <input type="submit">
+        </form>
+      </div>
+      <div class="episodes">
+
+      </div>
+      <div class="rating">
+        <input type="">
+      </div>
+    </div>
+    </div>
+  </body>
+  <script src="index.js"></script>
+</html>
