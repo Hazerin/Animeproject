@@ -26,8 +26,8 @@
     </nav>
     <div class="row">
       <div class="filters">
-      <div class="slidecontainer">
-        <h3>Release date (months ago)</h3>
+      <div class="releasemonth">
+        <h3>First episode release date <br> (months ago)</h3>
         <div class="values">
           <span id="range1">0</span>
           <!-- &dash; rappresenta un trattino 
@@ -36,21 +36,29 @@
           <span id="range2">240</span>
         </div>
         <div class="input__container">
-          <div class="slider-track"></div>
+          <div class="slider__track"></div>
           <input type="range" min="0" max="240" value="0" class="slider" id="myRange1" oninput="slideOne()"/>
           <input type="range" min="0" max="240" value="240" class="slider" id="myRange2" oninput="slideTwo()"/>
         </div>
       </div>
       <div class="genres">
+        <div class="genres__container">
+          <h3>Select a gender</h3>
+          <div class="genrescenter">
         <form autocomplete="off" action="/action_page.php">
           <div class="autocomplete">
-            <input id="myGenres" type="text" name="Genres" placeholder="Search for genres...">
+            <input id="search-genres" type="text" name="myGenres" placeholder="Search for genres...">
           </div>
-          <input type="submit">
         </form>
       </div>
+      </div>
+      </div>
       <div class="episodes">
-
+        <span id="range3">0</span>
+        <div class="input__container">
+          <div class="slider__track--2"></div>
+        <input type="range" min="0" max="60" value="0" class="slider" id="myRange3" oninput="slideThree()">
+      </div>
       </div>
       <div class="rating">
         <input type="">

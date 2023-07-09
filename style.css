@@ -84,13 +84,14 @@ nav {
 
 /* Nav extension */
 
-.slidecontainer {
+.releasemonth {
     background-color: rgb(169, 69, 200);
     position: relative;
     width: 25%; /* Width of the outside container */
     display: flex;
     flex-direction: column;
     padding: 10px;
+    height: 100%;
 }
 
 #myRange2 {
@@ -101,6 +102,8 @@ input[type="range"] {
     /* perchè webkit appearance è deprecated */
     appearance: none;
     width: 100%;
+    border: 0;
+    padding: 0;
     /* https://www.w3schools.com/css/css_outline.asp */
     outline: none;
     position: absolute;
@@ -110,7 +113,8 @@ input[type="range"] {
     pointer-events: none;
 }
 
-.slider-track {
+.slider__track,
+.slider__track--2 {
     width: 100%;
     height: 4px;
     background-color: #3264fe;
@@ -136,7 +140,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 .values {
     background-color: #3264fe;
-    width: 30%;
+    width: 40%;
     position: relative;
     margin: auto;
     border-radius: 10px;
@@ -165,9 +169,25 @@ input[type="range"]:active::-webkit-slider-thumb {
     padding: 20px 0;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 /* Genres */
+
+.genres__container {
+    background-color: lightgreen;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+}
+
+.genrescenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
 
 .genres {
     width: 25%;
@@ -176,7 +196,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 .autocomplete {
     /*the container must be positioned relative:*/
     position: relative;
-    display: inline-block;
+    height: 100%;
 }
 
 input {
@@ -190,10 +210,9 @@ input[type=text] {
     background-color: #f1f1f1;
     width: 100%;
 }
-input[type=submit] {
-background-color: DodgerBlue;
-color: #fff;
-}
+
+/* Voglio fare un submit che prenda tutto insieme, lo vedrò alla fine */
+
 .autocomplete-items {
 position: absolute;
 border: 1px solid #d4d4d4;
@@ -205,20 +224,29 @@ top: 100%;
 left: 0;
 right: 0;
 }
+
 .autocomplete-items div {
 padding: 10px;
 cursor: pointer;
 background-color: #fff;
 border-bottom: 1px solid #d4d4d4;
 }
+
 .autocomplete-items div:hover {
 /*when hovering an item:*/
 background-color: #e9e9e9;
 }
+
 .autocomplete-active {
 /*when navigating through the items using the arrow keys:*/
 background-color: DodgerBlue !important;
 color: #ffffff;
+}
+
+/* Episodes */
+
+.episodes {
+    width: 25%;
 }
 
 
