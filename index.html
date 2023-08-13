@@ -15,56 +15,186 @@
           <h2>Find here some fast recommendation based on your interests.</h2>
           <div class="header__presentation--input">
             <input
-              class="search_bar"
+              id="search_bar"
               type="text"
               placeholder="Search by name..."
             />
-            <button class="btn header__btn">Get Started</button>
+            <button class="btn header__btn click" onclick="searchAnime()">Search!</button>
           </div>
         </div>
       </div>
     </nav>
-    <div class="row">
-      <div class="filters">
-      <div class="releasemonth">
-        <h3>First episode release date <br> (months ago)</h3>
-        <div class="values">
-          <span id="range1">0</span>
-          <!-- &dash; rappresenta un trattino 
+      <img
+        src="https://upload.wikimedia.org/wikipedia/it/thumb/2/22/Dragon_Ball_Super.png/1200px-Dragon_Ball_Super.png"
+        class="background__image"
+      />
+      <div class="row">
+        <div class="filters">
+          <div class="releasemonth">
+            <h3>
+              First episode release date <br />
+              (years / months ago)
+            </h3>
+            <div class="values">
+              <span id="range1">0</span>
+              <!-- &dash; rappresenta un trattino 
           span è un elemento inline, non va a capo da solo-->
-          <span>&dash;</span>
-          <span id="range2">240</span>
-        </div>
-        <div class="input__container">
-          <div class="slider__track"></div>
-          <input type="range" min="0" max="240" value="0" class="slider" id="myRange1" oninput="slideOne()"/>
-          <input type="range" min="0" max="240" value="240" class="slider" id="myRange2" oninput="slideTwo()"/>
-        </div>
-      </div>
-      <div class="genres">
-        <div class="genres__container">
-          <h3>Select a gender</h3>
-          <div class="genrescenter">
-        <form autocomplete="off" action="/action_page.php">
-          <div class="autocomplete">
-            <input id="search-genres" type="text" name="myGenres" placeholder="Search for genres...">
+              <span>&dash;</span>
+              <span id="range2">240</span>
+            </div>
+            <div class="input__container">
+              <div class="slider__track"></div>
+              <input
+                type="range"
+                min="0"
+                max="240"
+                value="0"
+                class="slider"
+                id="myRange1"
+                oninput="slideOne()"
+              />
+              <input
+                type="range"
+                min="0"
+                max="240"
+                value="240"
+                class="slider"
+                id="myRange2"
+                oninput="slideTwo()"
+              />
+            </div>
           </div>
-        </form>
+          <div class="genres">
+            <div class="genres__container">
+              <h3>Select a gender</h3>
+              <div class="genrescenter">
+                <form name="genre" autocomplete="off" action="/action_page.php">
+                  <div class="autocomplete">
+                    <input
+                      id="search-genres"
+                      type="text"
+                      name="myGenres"
+                      placeholder="Search for genres..."
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="episodes">
+            <h3>At least how many episodes?</h3>
+            <div class="bottom__aligner">
+              <div class="value">
+                <span id="range3">0</span>
+              </div>
+              <div class="input__container">
+                <div class="slider__track--2"></div>
+                <input
+                  type="range"
+                  min="0"
+                  max="60"
+                  value="0"
+                  class="slider"
+                  id="myRange3"
+                  oninput="slideThree()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="rating">
+            <h3>Minimun rating</h3>
+            <div class="numeric_rating">0</div>
+            <div class="stars">
+              <div class="half__star--left click star1" onclick="litstar(1)">
+                <img
+                  class="star"
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Empty_Star.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="half__star--right click star2"
+                onclick="litstar(2)"
+              ></div>
+
+              <div class="half__star--left click star3" onclick="litstar(3)">
+                <img
+                  class="star"
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Empty_Star.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="half__star--right click star4"
+                onclick="litstar(4)"
+              ></div>
+
+              <div class="half__star--left click star5" onclick="litstar(5)">
+                <img
+                  class="star"
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Empty_Star.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="half__star--right click star6"
+                onclick="litstar(6)"
+              ></div>
+
+              <div class="half__star--left click star7" onclick="litstar(7)">
+                <img
+                  class="star"
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Empty_Star.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="half__star--right click star8"
+                onclick="litstar(8)"
+              ></div>
+
+              <div class="half__star--left click star9" onclick="litstar(9)">
+                <img
+                  class="star"
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Empty_Star.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="half__star--right click star10"
+                onclick="litstar(10)"
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="form__submitter_wrapper">
+        <div class="form__submitter_wrapper--inner">
+          <button class="form__submitter btn click" onclick="updateAnime()">
+            Update data
+          </button>
+          <a class="download btn click" onclick="ondownload()">Download JSON</a>
+        </div>
       </div>
+      <div class="row">
+      <section id="animelist">
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+        <div class="anime2"></div>
+        <div class="anime"></div>
+      </section>
       </div>
-      <div class="episodes">
-        <span id="range3">0</span>
-        <div class="input__container">
-          <div class="slider__track--2"></div>
-        <input type="range" min="0" max="60" value="0" class="slider" id="myRange3" oninput="slideThree()">
-      </div>
-      </div>
-      <div class="rating">
-        <input type="">
-      </div>
-    </div>
-    </div>
   </body>
   <script src="index.js"></script>
 </html>
