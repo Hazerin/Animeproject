@@ -249,7 +249,7 @@ async function main() {
 
 main();
 
-/* miao è l'handler della promise, diverso dalla funzioe miao esterna, in questo caso.
+/* miao è l'handler della promise, diverso dalla funzione miao esterna, in questo caso.
 Chiamandola quindi in verità la funzione miao non fa altro che impostare l'handler con
 "resolved" considerando quindi la promise risolta. */
 async function sleep(time) {
@@ -318,7 +318,7 @@ function ondownload() {
 
 /* Gestione degli overflow */
 
-
+var observer = [];
 
 /* Ricerca degli anime */
 
@@ -341,6 +341,18 @@ function searchAnime() {
   console.log(stars);
   console.log(title);
 
+  /* gli Observer rimangono e rivelano che l'elemento che contengono non è più contenuto nel genitore quando l'HTML
+    viene cancellato e poi riscritto. Questo perchè gli observer uscendo dalla funzione NON vengono eliminati perchè stanno
+    puntando a qualcosa (gli elementi HTML che ho creato). Quindi devo sconnetterli ed eliminarli un attimo
+    prima di creare il nuovo HTML. il metodo "disconnect" elimina l'osservatore. Inoltre per fare ciò devo dichiarare
+    l'array observer fuori da questa funzione. */
+
+  observer.forEach(obs => {
+    obs.disconnect();
+  });
+
+  observer = [];
+
   let animelist = document.querySelector(`#animelist`);
   animelist.innerHTML = ``;
 
@@ -348,6 +360,7 @@ function searchAnime() {
   let count = 0;
 
   for (let i = 0; i < post.length; i++) {
+
     if (count >= 20) {
       break;
     }
@@ -375,24 +388,32 @@ function searchAnime() {
   var options = {
     /* devo selezionare tutti i genitori, qui ne è selezionato uno solo */
     root: document.querySelector(`.anime__title`),
-    rootMargin: "0px",
+    rootMargin: `0px`,
     /* se anche un solo pixel è visibile, l'elemento viene valutato dall'observer. Utile in questo caso
     perchè l'overflow della sinossi potrebbe essere molto lungo. 1 vuol dire che ogni singolo
     pixel dell'elemento osservato dev'essere visibile nella viewport (in questo caso la viewport è il padre) */
     threshold: 0
   }
 
-  // Crea un observer per monitorare gli elementi .anime__title
-  const observer = new IntersectionObserver(handleOverflow, options);
+  // Creo tanti observer tanti quanti elementi .anime__title
+  for (let i = 0; i < document.querySelectorAll(`.anime__title`).length; i++) {
+    observer[i] = new IntersectionObserver(handleOverflow, {root: document.querySelectorAll(`.anime__title--text`)[i].parentNode,
+    rootMargin: `0px`, threshold: 0});
+  }
 
   // Seleziona tutti gli elementi .anime__title
-  var animeTitles = document.querySelectorAll('.anime__title--text');
+  const animeTitles = document.querySelectorAll('.anime__title--text');
 
+  for (let i = 0; i < document.querySelectorAll(`.anime__title--text`).length; i++) {
+    observer[i].observe(animeTitles[i]);
+  }
+  
   /* Registra l'observer per ciascun elemento .anime__title
-  map va usato quando bisogna ritornare un nuovo array, forEach se non c'è da ritornare nulla! */
-  animeTitles.forEach(title => {
+  map va usato quando bisogna ritornare un nuovo array, forEach se non c'è da ritornare nulla!
+  Metodo non più usato in quanto ho deciso di creare un observer separato per ogni padre. */
+/*   animeTitles.forEach(title => {
     observer.observe(title);
-  });
+  }); */
 
 /* map itera per forza su ogni elemento, soluzione scartata. */
 /*   post.map(x => {
