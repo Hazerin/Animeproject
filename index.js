@@ -229,7 +229,7 @@ function litstar(halfstars) {
 
   }
 
-  document.querySelector(".numeric_rating").textContent = `${halfstars}`;
+  document.querySelector(".numeric_rating--inner").value = `${halfstars}`;
 
   rating = halfstars;
 
@@ -331,7 +331,7 @@ function searchAnime() {
   const recentDate = Math.abs(sliderTwo.value - 240);
   const genre = genrevalue;
   const episodes = sliderThree.value;
-  const stars = rating;
+  const stars = toNumeric(document.querySelector(".numeric_rating--inner").value)
   const title = document.getElementById("search_bar").value;
 
   console.log(laterDate);
@@ -434,7 +434,8 @@ function monthsAgo(date) {
   today.getDate().toString().padStart(2,`0`);
   /* Funzione slice: taglia una stringa tra due intervalli */
   /* Sostituisce tutti i caratteri corrispondenti a quello o al range di quelli indicati
-  tra i due slash con quello indicato nel secondo parametro della funzione replace. */
+  tra i due slash con quello indicato nel secondo parametro della funzione replace.
+  g sta per tutti i caratteri trovati, non solo il primo. */
   date = date.slice(0,10).replace(/-/g,``);
   /* Leading o trailing, sono sequenze a inizio o fine stringa.
   "aaa eee uuu" le 3 a sono leading e le 3 u sono trailing. Commento a scopo didattico, non sto
@@ -443,6 +444,43 @@ function monthsAgo(date) {
   /* Calcolo di quanti mesi fa è uscito l'anime VS i mesi inseriti nei parametri */
   let datevalue = parseInt(date.slice(0,4)) * 12 + parseInt(date.slice(4,6));
   return (parseInt(amg.slice(0,4) * 12 + parseInt(amg.slice(4,6))) - datevalue);
+}
+
+function toNumeric(number) {
+  if (!(number[1] === `,`) && !(number[1] === `.`)) {
+  return document.querySelector(".numeric_rating--inner").value = 0;
+  }
+  /* la stringa tra parentesi è una regex (regular expression). nelle parentesi quadre elenco i caratteri
+  da cercare e la g è per dire di non fermarsi solo al primo match ma di passarli tutti.
+  È consentito confrontare più range in una singola chiamata con le regex: !-/ :-~ mi conserva solo i numeri
+  in quanto ho impostato i due range fuori dal loro posizionamento in ASCII.*/
+  const filter = number.replace(/[!-/:-~]/g,``);
+  /* Una stringa vuota non è nulla, ma semplicemente di lunghezza 0. */
+  console.log(filter);
+  if (filter.length === 0) {
+    return document.querySelector(".numeric_rating--inner").value = 0;
+  }
+  /* Aggiungo il punto interno al numero depurato dai corpi estranei */
+  else {
+    if (filter.length === 1) {
+      return filter;
+    }
+    else {
+      let temp = ``;
+      for (let i = 0; i < filter.length+1; i++) {
+        if (i === 1) {
+          temp += `.`;
+        }
+        else if (i > 1) {
+          temp += filter[i-1];
+        }
+        else {
+          temp += filter[i];
+        }
+      }
+      return document.querySelector(".numeric_rating--inner").value = temp;
+    }
+  }
 }
 
 testpost();
