@@ -235,6 +235,11 @@ function litstar(halfstars) {
 
 }
 
+function litstarFloat(halfstars) {
+  litstar(parseInt(halfstars));
+  return document.querySelector(".numeric_rating--inner").value = halfstars;
+}
+
 async function main() {
     const post = await fetch(`https://api.jikan.moe/v4/genres/anime`);
     let postjson = await post.json();
@@ -296,6 +301,11 @@ async function updateAnime() {
       i--;
     }
 
+    if (temp.status === 500) {
+      await sleep(500);
+      i--;
+    }
+
   }
   console.log(post);
 }
@@ -329,16 +339,22 @@ function searchAnime() {
     laterDate = 9999999;
   }
   const recentDate = Math.abs(sliderTwo.value - 240);
-  const genre = genrevalue;
+  let genre;
+  if (genrevalue != undefined && genrevalue != ``) {
+    genre = genrevalue.toLowerCase();
+  }
+  else {
+    genre = ``
+  }
   const episodes = sliderThree.value;
-  const stars = toNumeric(document.querySelector(".numeric_rating--inner").value)
-  const title = document.getElementById("search_bar").value;
+  const halfstars = parseFloat(litstarFloat(toNumeric(document.querySelector(".numeric_rating--inner").value)));
+  const title = document.getElementById("search_bar").value.trimStart();
 
   console.log(laterDate);
   console.log(recentDate);
   console.log(genre);
   console.log(episodes);
-  console.log(stars);
+  console.log(halfstars);
   console.log(title);
 
   /* gli Observer rimangono e rivelano che l'elemento che contengono non è più contenuto nel genitore quando l'HTML
@@ -364,7 +380,11 @@ function searchAnime() {
     if (count >= 20) {
       break;
     }
-    if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate)  {
+    console.log(evaluateGenre(genre.toLowerCase(), post[i].data.genres))
+    if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
+    && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
+    && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
+    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres))) {
     animelist.innerHTML += `<div class="anime">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
     <div class="anime__title">
@@ -380,7 +400,12 @@ function searchAnime() {
   function handleOverflow(entries) {
     entries.forEach(x => {
       if (x.intersectionRatio < 1) {
-        console.log("Overflow");
+        /* Aumento progressivamente la dimensione della finestra che contiene il titolo o la sinossi */
+        for (let i = 1; i < 18; i++) {
+          if (x.intersectionRatio < 1) {
+            x.target.parentNode.style.height = `${15 + i*5}%`
+          }
+        }
       }
     })
   }
@@ -427,6 +452,19 @@ function searchAnime() {
 
 /* Funzioni di conversione dei dati */
 
+function evaluateGenre(userGenre, animeGenre) {
+  /* Ritorna true se viene ritornato true almeno una volta.
+  Con il forEach arriverà sempre in fondo, ritornando false. */
+  /* il "doppio" return serve per far si in modo che il risultato del metodo
+  sia ritornato alla funzione chiamate , e non alla funzione di callback interna! */
+  return animeGenre.some(x => {
+    if (userGenre === x.name.slice(0, userGenre.length).toLowerCase()) {
+      console.log("true");
+    }
+    return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
+  });
+}
+
 function monthsAgo(date) {
   const today = new Date();
   /* Converte in stringa e assicura che mese e giorno siano a due cifre */
@@ -447,7 +485,10 @@ function monthsAgo(date) {
 }
 
 function toNumeric(number) {
-  if (!(number[1] === `,`) && !(number[1] === `.`)) {
+  if (number.replace(/[!-/:-~]/g,``).length === 1) {
+    return document.querySelector(".numeric_rating--inner").value = number;
+  }
+  else if (!(number[1] === `,`) && !(number[1] === `.`)) {
   return document.querySelector(".numeric_rating--inner").value = 0;
   }
   /* la stringa tra parentesi è una regex (regular expression). nelle parentesi quadre elenco i caratteri
@@ -483,7 +524,8 @@ function toNumeric(number) {
   }
 }
 
-testpost();
+// da riattivare
+/* testpost(); */
 
 async function testpost() {
   post = await fetch(`./Resources/AllAnime.json`);
