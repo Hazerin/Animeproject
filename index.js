@@ -286,24 +286,34 @@ let post = [];
 async function updateAnime() {
   /* intendo fare un array in cui tutti gli spazi siano occupati da dati utili */
   let fillcount = 1;
+  /* non so esattamente quanti anime ci sono, per cui termino il ciclo se ci sono troppe chiamate andate
+  male di fila. */
+  let badcount = 0;
 
-  for (let i = 1; i < 50000; i++) {
+  for (let i = 1; i < 100000; i++) {
     let temp = await fetch(`https://api.jikan.moe/v4/anime/${i}/full`);
 
-    if (temp.status === 404) {
+    if (badcount > 9999) {
+      break;
+    }
+    else if (temp.status === 429) {
+      await sleep(500);
+      i--;
+      badcount++;
+    }
+    else if (temp.status === 500) {
+      await sleep(500);
+      badcount++;
+    }
+    else if (temp.status === 404) {
+      await sleep(10);
       fillcount++;
+      badcount++;
     }
-    else
-    post[i-fillcount] = await temp.json();
-
-    if (temp.status === 429) {
-      await sleep(500);
-      i--;
-    }
-
-    if (temp.status === 500) {
-      await sleep(500);
-      i--;
+    else {
+      post[i-fillcount] = await temp.json();
+      console.log(`Slot ${i - fillcount} dell'array riempito con successo`)
+      badcount = 0;
     }
 
   }
@@ -380,11 +390,10 @@ function searchAnime() {
     if (count >= 20) {
       break;
     }
-    console.log(evaluateGenre(genre.toLowerCase(), post[i].data.genres))
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
     && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
-    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres))) {
+    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes))) {
     animelist.innerHTML += `<div class="anime">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
     <div class="anime__title">
@@ -452,20 +461,33 @@ function searchAnime() {
 
 /* Funzioni di conversione dei dati */
 
-function evaluateGenre(userGenre, animeGenre) {
+/* Questo perchè i "generi" MAL li ha divisi in generi e temi...e quindi devo adattarmi */
+function evaluateGenre(userGenre, animeGenre, animeTheme) {
   /* Ritorna true se viene ritornato true almeno una volta.
-  Con il forEach arriverà sempre in fondo, ritornando false. */
+  Con il forEach arriverà sempre in fondo, ritornando sempre false. */
   /* il "doppio" return serve per far si in modo che il risultato del metodo
   sia ritornato alla funzione chiamate , e non alla funzione di callback interna! */
-  return animeGenre.some(x => {
+  if (!animeGenre.some(x => {
     if (userGenre === x.name.slice(0, userGenre.length).toLowerCase()) {
-      console.log("true");
+      return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
     }
-    return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
-  });
+    else return false;
+  })) {
+    return animeTheme.some(x => {
+      if (userGenre === x.name.slice(0, userGenre.length).toLowerCase()) {
+        return true;
+      }
+      else return false;
+    });
+  }
+  return false;
 }
 
 function monthsAgo(date) {
+  if (date === null) {
+    /* Anime non ancora trasmesso */
+    return -1;
+  }
   const today = new Date();
   /* Converte in stringa e assicura che mese e giorno siano a due cifre */
   const amg = today.getFullYear() + today.getMonth().toString().padStart(2,`0`) +
@@ -525,11 +547,21 @@ function toNumeric(number) {
 }
 
 // da riattivare
-/* testpost(); */
+testpost();
 
 async function testpost() {
   post = await fetch(`./Resources/AllAnime.json`);
   post = await post.json();
+  let i = 0;
+  let temp = []
+    post.forEach(x => {
+    if (x.status != 500) {
+      temp[i] = x;
+      i++;
+    }
+    else console.log("status è 500");
+    post = temp;
+  });
   console.log(post);
 }
 
