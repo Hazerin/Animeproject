@@ -480,7 +480,7 @@ function evaluateGenre(userGenre, animeGenre, animeTheme) {
       else return false;
     });
   }
-  return false;
+  else return true;
 }
 
 function monthsAgo(date) {
