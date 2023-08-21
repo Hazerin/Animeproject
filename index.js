@@ -52,7 +52,6 @@ function autocomplete(inp, arr) {
   /* L'addEventListener fa si che quando si registri un determinato tipo di "input" (come i click) e una
   funzione da eseguire quando si interagisce con un determinato elemento della pagina. */
   inp.addEventListener("input", function(e) {
-    genrevalue = inp.value;
     /* this.value = valore dell'input */
     var a, b, i, val = this.value;
     /*close any already open lists of autocompleted values*/
@@ -83,7 +82,6 @@ function autocomplete(inp, arr) {
             /*close the list of autocompleted values,
             (or any other open lists of autocompleted values:*/
             closeAllLists();
-            genrevalue = inp.value;
         });
         a.appendChild(b);
       }
@@ -243,13 +241,12 @@ function litstarFloat(halfstars) {
 async function main() {
     const post = await fetch(`https://api.jikan.moe/v4/genres/anime`);
     let postjson = await post.json();
-    console.log(postjson);
     postjson = postjson.data.map(x => {
         return x.name;
     })
-    console.log(postjson);
     /* Devo aspettare l'async mettendo dentro pure la funzione che inizializza l'autocomplete o far aspettare fuori in qualche modo */
-    autocomplete(document.getElementById("search-genres"), postjson);
+    autocomplete(document.querySelector("#search-genres"), postjson);
+    autocomplete(document.querySelector("#exclude-genres"), postjson);
 }
 
 main();
@@ -350,11 +347,18 @@ function searchAnime() {
   }
   const recentDate = Math.abs(sliderTwo.value - 240);
   let genre;
-  if (genrevalue != undefined && genrevalue != ``) {
-    genre = genrevalue.toLowerCase();
+  if (document.querySelector("#search-genres").value != ``) {
+    genre = document.querySelector("#search-genres").value.toLowerCase();
   }
   else {
-    genre = ``
+    genre = ``;
+  }
+  let excludedgenre;
+  if (document.querySelector("#exclude-genres").value != ``) {
+    excludedgenre = document.querySelector("#exclude-genres").value.toLowerCase();
+  }
+  else {
+    excludedgenre = ``;
   }
   const episodes = sliderThree.value;
   const halfstars = parseFloat(litstarFloat(toNumeric(document.querySelector(".numeric_rating--inner").value)));
@@ -363,6 +367,7 @@ function searchAnime() {
   console.log(laterDate);
   console.log(recentDate);
   console.log(genre);
+  console.log(excludedgenre);
   console.log(episodes);
   console.log(halfstars);
   console.log(title);
@@ -386,6 +391,10 @@ function searchAnime() {
   let count = 0;
 
   for (let i = 0; i < post.length; i++) {
+    if (i === post.length - 1) {
+      console.log(post.length);
+      console.log("fine");
+    }
 
     if (count >= 20) {
       break;
@@ -393,12 +402,14 @@ function searchAnime() {
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
     && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
-    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes))) {
+    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes))
+    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre.toLowerCase(), post[i].data.genres, post[i].data.themes))) {
     animelist.innerHTML += `<div class="anime">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
     <div class="anime__title">
     <p class="anime__title--text">${post[i].data.title}</p></div></div>`;
     count++;
+    console.log(i);
     }
   }
 
@@ -406,17 +417,37 @@ function searchAnime() {
   Se la percentuale di intersezione tra un elemento e l'altro è minore di 1 (100%) con la funzione
   intersectionRatio vuol dire che c'è un overflow */
 
+  /* Gli observer osservano l'area che han individuato originariamente, non la espadono, quindi
+  per ora uso un modo alternativo per calcolare di quanto espandere l'area basato su quante parole
+  ci sono nel titolo. */
+
   function handleOverflow(entries) {
     entries.forEach(x => {
       if (x.intersectionRatio < 1) {
-        /* Aumento progressivamente la dimensione della finestra che contiene il titolo o la sinossi */
-        for (let i = 1; i < 18; i++) {
-          if (x.intersectionRatio < 1) {
-            x.target.parentNode.style.height = `${15 + i*5}%`
-          }
+        /* Aggiusto l'altezza della finestra che contiene il titolo in base a quanto di quanto
+        overflow ha il testo. Indispensabile fare un unico passaggio in quanto l'observer fotografa
+        una sola volta: non terrà conto del cambiamento futuro della dimensione del parent e del child
+        se queste vengono cambiate quindi il calcolo va fatto con quello che si ottiene alla prima generazione
+        degli elementi.*/
+
+        /* Ottiene dalla finestra del browser lo stile di un elemento dopo che il CSS è stato applicato.
+        Recuperarla col metodo "style" permette di leggere solo parametri definiti nell'HTML! */
+        /* Per qualche ragione me lo recupera in px, devo troncarli via, idem la % per usi futuri.
+        Ho deciso di deprecarlo perchè mi ritorna 60px che è un pò complicato da trasformare per i miei scopi.*/
+
+        /* height = window.getComputedStyle(x.target.parentNode).getPropertyValue(`height`); */
+
+        /* Significa che se qualora dovesse essere vuoto o null, varrà 15. */
+        height = x.target.style.height;
+        if (height === ``) {
+          height = 15;
         }
+        /* moltiplico per l'inverso dell'intersection ratio per ottenere una finestra che contiene
+        esattamente il titolo, azzerando l'overflow. */
+        else height = parseInt(height.replace(/[px%]/g,``));
+        x.target.parentNode.style.height = `${height * 1/x.intersectionRatio}%`;
       }
-    })
+    });
   }
 
   var options = {
@@ -468,16 +499,10 @@ function evaluateGenre(userGenre, animeGenre, animeTheme) {
   /* il "doppio" return serve per far si in modo che il risultato del metodo
   sia ritornato alla funzione chiamate , e non alla funzione di callback interna! */
   if (!animeGenre.some(x => {
-    if (userGenre === x.name.slice(0, userGenre.length).toLowerCase()) {
-      return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
-    }
-    else return false;
+    return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
   })) {
     return animeTheme.some(x => {
-      if (userGenre === x.name.slice(0, userGenre.length).toLowerCase()) {
-        return true;
-      }
-      else return false;
+      return (userGenre === x.name.slice(0, userGenre.length).toLowerCase());
     });
   }
   else return true;
@@ -507,11 +532,12 @@ function monthsAgo(date) {
 }
 
 function toNumeric(number) {
+  console.log(number.length);
   if (number.replace(/[!-/:-~]/g,``).length === 1) {
-    return document.querySelector(".numeric_rating--inner").value = number;
+    return document.querySelector(".numeric_rating--inner").value = number.replace(/[!-/:-~]/g,``);
   }
-  else if (!(number[1] === `,`) && !(number[1] === `.`)) {
-  return document.querySelector(".numeric_rating--inner").value = 0;
+  else if (!(number[1] === `,`) || !(number[1] === `.`)) {
+    return document.querySelector(".numeric_rating--inner").value = 0;
   }
   /* la stringa tra parentesi è una regex (regular expression). nelle parentesi quadre elenco i caratteri
   da cercare e la g è per dire di non fermarsi solo al primo match ma di passarli tutti.
