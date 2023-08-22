@@ -386,6 +386,7 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .anime, .anime2 {

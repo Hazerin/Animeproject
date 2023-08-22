@@ -238,15 +238,20 @@ function litstarFloat(halfstars) {
   return document.querySelector(".numeric_rating--inner").value = halfstars;
 }
 
+/* Metto come variabile globale in quanto mi servirà anche come controllo di correttezza
+per i generi inseriti dall'utente */
+let postGenres;
+
 async function main() {
     const post = await fetch(`https://api.jikan.moe/v4/genres/anime`);
-    let postjson = await post.json();
-    postjson = postjson.data.map(x => {
+    postGenres = await post.json();
+    postGenres = postGenres.data.map(x => {
         return x.name;
-    })
+    });
+    console.log(postGenres);
     /* Devo aspettare l'async mettendo dentro pure la funzione che inizializza l'autocomplete o far aspettare fuori in qualche modo */
-    autocomplete(document.querySelector("#search-genres"), postjson);
-    autocomplete(document.querySelector("#exclude-genres"), postjson);
+    autocomplete(document.querySelector("#search-genres"), postGenres);
+    autocomplete(document.querySelector("#exclude-genres"), postGenres);
 }
 
 main();
@@ -348,14 +353,14 @@ function searchAnime() {
   const recentDate = Math.abs(sliderTwo.value - 240);
   let genre;
   if (document.querySelector("#search-genres").value != ``) {
-    genre = document.querySelector("#search-genres").value.toLowerCase();
+    genre = genresArray(document.querySelector("#search-genres").value.toLowerCase());
   }
   else {
     genre = ``;
   }
   let excludedgenre;
   if (document.querySelector("#exclude-genres").value != ``) {
-    excludedgenre = document.querySelector("#exclude-genres").value.toLowerCase();
+    excludedgenre = genresArray(document.querySelector("#exclude-genres").value.toLowerCase());
   }
   else {
     excludedgenre = ``;
@@ -397,19 +402,20 @@ function searchAnime() {
     }
 
     if (count >= 20) {
+      animelist.innerHTML += `<button class="btn click btn--more">More titles</button>`
       break;
     }
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
     && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
-    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes, post[i].data.demographics))
-    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre.toLowerCase(), post[i].data.genres, post[i].data.themes, post[i].data.demographics))) {
+    && ((genre === undefined || genre === ``) || evaluateGenre(genre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
+    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))) {
     animelist.innerHTML += `<div class="anime">
+    <a href="${post[i].data.url}" target="_blank">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
     <div class="anime__title">
-    <p class="anime__title--text">${post[i].data.title}</p></div></div>`;
+    <p class="anime__title--text">${post[i].data.title}</p></div></div></a>`;
     count++;
-    console.log(i);
     }
   }
 
@@ -492,21 +498,61 @@ function searchAnime() {
 
 /* Funzioni di conversione dei dati */
 
-/* Questo perchè i "generi" MAL li ha divisi in generi e temi...e quindi devo adattarmi */
+function genresArray(genres) {
+  /* non è necessario qui l'escape per dire dal meno alla chiocciola */
+  genres = genres.replace(/[ -+--@]/g, ``);
+  console.log(genres);
+  console.log(postGenres);
+  let array = [];
+  let i;
+  while (genres != ``) {
+    for (let j = 0; j < genres.length; j++) {
+      if (genres[j] === `,`) {
+        break;
+      }
+      i = j;
+    }
+    /* il secondo valore della funzione slice è inteso come il primo carattere da escludere.
+    Quindi escludo a partire dalla virgola in poi. */
+    array.push(genres.slice(0, i+1));
+    /* +2 qui perchè la parte rimanente dell'array deve togliere anche la virgola.*/
+    genres = genres.slice(i+2, genres.length).trimStart();
+  }
+  array = array.map(x => {
+    postGenres.forEach(y => {
+      if (x === y.replace(/ /g, ``).toLowerCase()) {
+        x = y;
+      }
+    });
+    return x;
+  });
+  console.log(array);
+  return array;
+}
+
+/* Questo perchè i "generi" MAL li ha divisi in generi, temi e demografie...e quindi devo adattarmi */
 function evaluateGenre(userGenre, animeGenre, animeTheme, animeDemographics) {
   /* Ritorna true se viene ritornato true almeno una volta.
   Con il forEach arriverà sempre in fondo, ritornando sempre false. */
   /* il "doppio" return serve per far si in modo che il risultato del metodo
   sia ritornato alla funzione chiamate , e non alla funzione di callback interna! */
-  if (!animeGenre.some(x => {
-    return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
-  })) {
-    if (!animeTheme.some(x => {
+  const userGenreTruth = userGenre.map(userGenre => {
+    if (!animeGenre.some(x => {
       return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
     })) {
-      return animeDemographics.some (x => {
+      if (!animeTheme.some(x => {
         return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
-      });
+      })) {
+        return animeDemographics.some (x => {
+          return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
+        });
+      }
+    }
+    return true;
+  });
+  for (let i = 0; i < userGenreTruth.length; i++) {
+    if (userGenreTruth[i] === false) {
+      return false;
     }
   }
   return true;
