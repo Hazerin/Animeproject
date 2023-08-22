@@ -402,8 +402,8 @@ function searchAnime() {
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
     && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
-    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes))
-    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre.toLowerCase(), post[i].data.genres, post[i].data.themes))) {
+    && ((genre === undefined || genre === ``) || evaluateGenre(genre.toLowerCase(), post[i].data.genres, post[i].data.themes, post[i].data.demographics))
+    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre.toLowerCase(), post[i].data.genres, post[i].data.themes, post[i].data.demographics))) {
     animelist.innerHTML += `<div class="anime">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
     <div class="anime__title">
@@ -493,7 +493,7 @@ function searchAnime() {
 /* Funzioni di conversione dei dati */
 
 /* Questo perchè i "generi" MAL li ha divisi in generi e temi...e quindi devo adattarmi */
-function evaluateGenre(userGenre, animeGenre, animeTheme) {
+function evaluateGenre(userGenre, animeGenre, animeTheme, animeDemographics) {
   /* Ritorna true se viene ritornato true almeno una volta.
   Con il forEach arriverà sempre in fondo, ritornando sempre false. */
   /* il "doppio" return serve per far si in modo che il risultato del metodo
@@ -501,11 +501,15 @@ function evaluateGenre(userGenre, animeGenre, animeTheme) {
   if (!animeGenre.some(x => {
     return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
   })) {
-    return animeTheme.some(x => {
-      return (userGenre === x.name.slice(0, userGenre.length).toLowerCase());
-    });
+    if (!animeTheme.some(x => {
+      return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
+    })) {
+      return animeDemographics.some (x => {
+        return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
+      });
+    }
   }
-  else return true;
+  return true;
 }
 
 function monthsAgo(date) {
