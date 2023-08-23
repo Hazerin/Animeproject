@@ -53,7 +53,7 @@ function autocomplete(inp, arr) {
   funzione da eseguire quando si interagisce con un determinato elemento della pagina. */
   inp.addEventListener("input", function(e) {
     /* this.value = valore dell'input */
-    var a, b, i, val = this.value;
+    var a, b, i, val = lastWord(this.value);
     /*close any already open lists of autocompleted values*/
     closeAllLists();
     if (!val) {return false}
@@ -78,7 +78,8 @@ function autocomplete(inp, arr) {
         /*execute a function when someone clicks on the item value (DIV element):*/
             b.addEventListener("click", function(e) {
             /*insert the value for the autocomplete text field:*/
-            inp.value = this.getElementsByTagName("input")[0].value;
+            inp.value = removeLastWord(inp.value);
+            inp.value += this.getElementsByTagName("input")[0].value;
             /*close the list of autocompleted values,
             (or any other open lists of autocompleted values:*/
             closeAllLists();
@@ -406,7 +407,7 @@ function searchAnime() {
       break;
     }
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
-    && post[i].data.score >= halfstars && post[i].data.episodes >= episodes
+    && post[i].data.score >= halfstars && countSequelEpisodes(post[i].data) >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
     && ((genre === undefined || genre === ``) || evaluateGenre(genre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
     && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))) {
@@ -497,6 +498,55 @@ function searchAnime() {
 }
 
 /* Funzioni di conversione dei dati */
+
+function countSequelEpisodes(anime) {
+  let sequel;
+  let numberEps = 0;
+  if (anime.relations.some(x => {
+    if (x.relation === `Sequel`) {
+      sequel = x.entry.map (y => {
+        return y.mal_id;
+      });
+      return true;
+    }
+    return false;
+  })) {
+    /* non posso usare la map per fare return perchè mi ritornerebbe solo il primo numero se non
+    ha come bersaglio un array. */
+    post.forEach(x => {
+      sequel.forEach(y => {
+        if (x.data.mal_id === y) {
+          /* visto che numberEps è una variabile locale, riazzerarla a ogni chiamata di funzione non
+          ha conseguenze negative nel passo induttivo. (ovvero alla prima chiamata) */
+          numberEps = countSequelEpisodes(x.data);
+        }
+      })
+    })
+  };
+  return numberEps + anime.episodes;
+}
+
+function lastWord(string) {
+  for (let i = 0; i < string.length; i++) {
+    if (string[i] === `,`) {
+      string = string.slice(i+1, string.length).trimStart();
+      i = 0;
+    }
+  }
+  console.log(string);
+  return string;
+}
+
+function removeLastWord(string) {
+  for (let i = string.length-1; i > -1; i--) {
+    if (string[i] === `,`) {
+      string = string.slice(0, i+1);
+      console.log(string);
+      return string;
+    }
+  }
+  return ``;
+}
 
 function genresArray(genres) {
   /* non è necessario qui l'escape per dire dal meno alla chiocciola */
