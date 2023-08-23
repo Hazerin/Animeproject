@@ -636,7 +636,7 @@ function toNumeric(number) {
   if (number.replace(/[!-/:-~]/g,``).length === 1) {
     return document.querySelector(".numeric_rating--inner").value = number.replace(/[!-/:-~]/g,``);
   }
-  else if (!(number[1] === `,`) || !(number[1] === `.`)) {
+  else if (!(number[1] === `,`) && !(number[1] === `.`)) {
     return document.querySelector(".numeric_rating--inner").value = 0;
   }
   /* la stringa tra parentesi è una regex (regular expression). nelle parentesi quadre elenco i caratteri
