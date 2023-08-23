@@ -354,14 +354,14 @@ function searchAnime() {
   const recentDate = Math.abs(sliderTwo.value - 240);
   let genre;
   if (document.querySelector("#search-genres").value != ``) {
-    genre = genresArray(document.querySelector("#search-genres").value.toLowerCase());
+    genre = genresArray(document.querySelector("#search-genres").value);
   }
   else {
     genre = ``;
   }
   let excludedgenre;
   if (document.querySelector("#exclude-genres").value != ``) {
-    excludedgenre = genresArray(document.querySelector("#exclude-genres").value.toLowerCase());
+    excludedgenre = genresArray(document.querySelector("#exclude-genres").value);
   }
   else {
     excludedgenre = ``;
@@ -407,10 +407,10 @@ function searchAnime() {
       break;
     }
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
-    && post[i].data.score >= halfstars && countSequelEpisodes(post[i].data) >= episodes
     && ((title === undefined || title === ``) || title.toLowerCase() === post[i].data.title.slice(0, title.length).toLowerCase())
     && ((genre === undefined || genre === ``) || evaluateGenre(genre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
-    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))) {
+    && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
+    && (post[i].data.score >= halfstars && countSequelEpisodes(post[i].data) >= episodes)) {
     animelist.innerHTML += `<div class="anime">
     <a href="${post[i].data.url}" target="_blank">
     <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
@@ -523,8 +523,13 @@ function countSequelEpisodes(anime) {
       })
     })
   };
-  return numberEps + anime.episodes;
+  if (anime.episodes == undefined) {
+    return 0;
+  }
+  else return numberEps + anime.episodes;
 }
+
+/* Funzioni necessarie affinchè l'autocomplete funzioni correttamente per più anime */
 
 function lastWord(string) {
   for (let i = 0; i < string.length; i++) {
@@ -550,7 +555,7 @@ function removeLastWord(string) {
 
 function genresArray(genres) {
   /* non è necessario qui l'escape per dire dal meno alla chiocciola */
-  genres = genres.replace(/[ -+--@]/g, ``);
+  genres = genres.replace(/[ -+.-@]/g, ``);
   console.log(genres);
   console.log(postGenres);
   let array = [];
@@ -564,19 +569,18 @@ function genresArray(genres) {
     }
     /* il secondo valore della funzione slice è inteso come il primo carattere da escludere.
     Quindi escludo a partire dalla virgola in poi. */
-    array.push(genres.slice(0, i+1));
+    array.push(genres.slice(0, i+1).toLowerCase());
     /* +2 qui perchè la parte rimanente dell'array deve togliere anche la virgola.*/
     genres = genres.slice(i+2, genres.length).trimStart();
   }
   array = array.map(x => {
     postGenres.forEach(y => {
       if (x === y.replace(/ /g, ``).toLowerCase()) {
-        x = y;
+        x = y.toLowerCase();
       }
     });
     return x;
   });
-  console.log(array);
   return array;
 }
 
@@ -588,16 +592,20 @@ function evaluateGenre(userGenre, animeGenre, animeTheme, animeDemographics) {
   sia ritornato alla funzione chiamate , e non alla funzione di callback interna! */
   const userGenreTruth = userGenre.map(userGenre => {
     if (!animeGenre.some(x => {
+      console.log(x.name.slice(0, userGenre.length).toLowerCase());
       return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
     })) {
       if (!animeTheme.some(x => {
+        console.log(x.name.slice(0, userGenre.length).toLowerCase());
         return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
       })) {
         return animeDemographics.some (x => {
+          console.log(x.name.slice(0, userGenre.length).toLowerCase());
           return userGenre === x.name.slice(0, userGenre.length).toLowerCase();
         });
       }
     }
+    console.log("true");
     return true;
   });
   for (let i = 0; i < userGenreTruth.length; i++) {
