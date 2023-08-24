@@ -357,7 +357,7 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
 }
 
 .background__container {
-    position: absolute;
+    position: fixed;
     width: 100vw;
     height: 100vh;
     z-index: -1;
@@ -368,6 +368,9 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     height: 100%;
 }
 
+.figure {
+    height: 100%;
+}
 
 /* form-submitter */
 
@@ -389,6 +392,7 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
 /* chiamata API */
 
 #animelist {
+    margin-top: 10px;
     width: 100%;
     display: flex;
     flex-wrap: wrap;

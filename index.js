@@ -348,7 +348,7 @@ molto elegante ma soluzione facile. */
 
 let i = 0;
 
-function searchAnime(noOfAnimeToSearch) {
+function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
 
   /* Numero di elementi HTML massimo da generare */
   console.log(noOfAnimeToSearch);
@@ -398,13 +398,20 @@ function searchAnime(noOfAnimeToSearch) {
 
   let animelist = document.querySelector(`#animelist`);
 
+  /* Misuro l-altezza della pagina attuale per poi attaccare correttamente gli
+  sfondi successivi. */
+
+  const pageHeightBeforeSearch = window.innerHeight;
+  console.log(pageHeightBeforeSearch);
+
+  if (secondOrMoreGen === 0) {
+    i = 0;
+    animelist.innerHTML = ``;
+  }
+
   let count = 0;
 
   while (i < post.length) {
-    if (i === post.length - 1) {
-      console.log(post.length);
-      console.log("fine");
-    }
 
     if (count >= noOfAnimeToSearch) {
       break;
@@ -485,7 +492,14 @@ function searchAnime(noOfAnimeToSearch) {
   }
 
   flag++;
-  
+
+  /* Stampo più volte lo sfondo per coprire il bianco che avrebbe altrimenti lo sfondo */
+
+  if (true) {
+
+  };
+
+
   /* Registra l'observer per ciascun elemento .anime__title
   map va usato quando bisogna ritornare un nuovo array, forEach se non c'è da ritornare nulla!
   Metodo non più usato in quanto ho deciso di creare un observer separato per ogni padre. */
@@ -508,8 +522,10 @@ function searchAnime(noOfAnimeToSearch) {
 let flag = 0;
 
 window.addEventListener(`scroll`, function() {
+  
+  console.log(this.document.body.scrollHeight);
+
   if (flag >= 1) {
-    console.log(flag);
     /* altezza in pixel. il this non è necessario perchè è già sottointeso l'oggetto globale, che
     è Window (la W maiuscola! che contiene tutto il resto (document, window...)) */
     const pageTotalHeight = this.document.body.scrollHeight;
@@ -518,9 +534,9 @@ window.addEventListener(`scroll`, function() {
     /* di quanti pixel ho scrollato in giù da inizio pagina */
     const scrollPosition = this.window.scrollY;
 
-    console.log(pageTotalHeight - (windowHeight + scrollPosition));
-    if (pageTotalHeight - (windowHeight + scrollPosition + 5) <= 0) {
-      console.log("valutazione")
+    /* il +1 è necessario visto che a quanto pare lo sfondo non copre esattamente
+    tutta la pagina, per un solo pixel! */
+    if (pageTotalHeight - (windowHeight + scrollPosition + 1) <= 0) {
       const event = new Event(`generateMoreAnimeOnBottom`);
       window.dispatchEvent(event);
     }
@@ -528,8 +544,7 @@ window.addEventListener(`scroll`, function() {
 });
 
 window.addEventListener(`generateMoreAnimeOnBottom`, function() {
-  console.log("ciao");
-  searchAnime(20*flag);
+  searchAnime(20*flag, 1);
 });
 
 /* Funzioni di conversione dei dati */
@@ -678,6 +693,9 @@ function toNumeric(number) {
   console.log(number.length);
   if (number.replace(/[!-/:-~]/g,``).length === 1) {
     return document.querySelector(".numeric_rating--inner").value = number.replace(/[!-/:-~]/g,``);
+  }
+  else if (number = 10) {
+    return number;
   }
   else if (!(number[1] === `,`) && !(number[1] === `.`)) {
     return document.querySelector(".numeric_rating--inner").value = 0;

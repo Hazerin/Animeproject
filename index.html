@@ -8,6 +8,14 @@
     <title>Document</title>
   </head>
   <body>
+    <div class="background__container">
+      <figure class="figure">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/it/thumb/2/22/Dragon_Ball_Super.png/1200px-Dragon_Ball_Super.png"
+        class="background__image"
+      />
+      </figure>
+    </div>
     <nav>
       <div class="row">
         <div class="nav__container">
@@ -19,17 +27,11 @@
               type="text"
               placeholder="Search by name..."
             />
-            <button class="btn header__btn click" onclick="searchAnime(20)">Search!</button>
+            <button class="btn header__btn click" onclick="searchAnime(20, 0)">Search!</button>
           </div>
         </div>
       </div>
     </nav>
-    <div class="background__container">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/it/thumb/2/22/Dragon_Ball_Super.png/1200px-Dragon_Ball_Super.png"
-        class="background__image"
-      />
-    </div>
       <div class="row">
         <div class="filters">
           <div class="releasemonth">
@@ -189,6 +191,7 @@
           </div>
         </div>
       </div>
+      <!-- i pulsati per aggiornare il database servono solo a me.
       <div class="form__submitter_wrapper">
         <div class="form__submitter_wrapper--inner">
           <button class="form__submitter btn click" onclick="updateAnime()">
@@ -196,7 +199,7 @@
           </button>
           <a class="download btn click" onclick="ondownload()">Download JSON</a>
         </div>
-      </div>
+      </div> -->
       <div class="row">
       <section id="animelist">
       </section>
