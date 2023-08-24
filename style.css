@@ -356,12 +356,18 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     align-items: center;
 }
 
-.background__image {
+.background__container {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
 }
+
+.background__image {
+    width: 100%;
+    height: 100%;
+}
+
 
 /* form-submitter */
 
@@ -389,7 +395,7 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     justify-content: center;
 }
 
-.anime, .anime2 {
+.anime {
     width: 20%;
     height: 400px;
 }
@@ -397,10 +403,6 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
 .anime {
     position: relative;
     background-color: blue;
-}
-
-.anime2 {
-    background-color: red;
 }
 
 .anime__poster {

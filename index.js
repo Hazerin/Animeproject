@@ -343,9 +343,15 @@ function ondownload() {
 
 var observer = [];
 
-/* Ricerca degli anime */
+/* Ricerca degli anime. i è una variabile globale per tenere traccia di dove sono arrivato, non
+molto elegante ma soluzione facile. */
 
-function searchAnime() {
+let i = 0;
+
+function searchAnime(noOfAnimeToSearch) {
+
+  /* Numero di elementi HTML massimo da generare */
+  console.log(noOfAnimeToSearch);
 
   let laterDate = 240 - sliderOne.value;
   if (laterDate === 240) {
@@ -391,19 +397,16 @@ function searchAnime() {
   observer = [];
 
   let animelist = document.querySelector(`#animelist`);
-  animelist.innerHTML = ``;
 
-  /* Numero di elementi HTML massimo da generare */
   let count = 0;
 
-  for (let i = 0; i < post.length; i++) {
+  while (i < post.length) {
     if (i === post.length - 1) {
       console.log(post.length);
       console.log("fine");
     }
 
-    if (count >= 20) {
-      animelist.innerHTML += `<button class="btn click btn--more">More titles</button>`
+    if (count >= noOfAnimeToSearch) {
       break;
     }
     if (monthsAgo(post[i].data.aired.from) > recentDate && monthsAgo(post[i].data.aired.from) < laterDate
@@ -418,6 +421,7 @@ function searchAnime() {
     <p class="anime__title--text">${post[i].data.title}</p></div></div></a>`;
     count++;
     }
+    i++;
   }
 
   /* Funzione che verrà chiamata quando il contenuto di un elemento supera i limiti dell'elemento stesso
@@ -451,7 +455,7 @@ function searchAnime() {
         }
         /* moltiplico per l'inverso dell'intersection ratio per ottenere una finestra che contiene
         esattamente il titolo, azzerando l'overflow. */
-        else height = parseInt(height.replace(/[px%]/g,``));
+        else height = parseInt(height.replace(/px%/g,``));
         x.target.parentNode.style.height = `${height * 1/x.intersectionRatio}%`;
       }
     });
@@ -479,6 +483,8 @@ function searchAnime() {
   for (let i = 0; i < document.querySelectorAll(`.anime__title--text`).length; i++) {
     observer[i].observe(animeTitles[i]);
   }
+
+  flag++;
   
   /* Registra l'observer per ciascun elemento .anime__title
   map va usato quando bisogna ritornare un nuovo array, forEach se non c'è da ritornare nulla!
@@ -496,6 +502,35 @@ function searchAnime() {
     console.log(x.data.episodes);
   }); */
 }
+
+/* Funzioni per continuare la ricerca una volta arrivati alla fine della pagina */
+
+let flag = 0;
+
+window.addEventListener(`scroll`, function() {
+  if (flag >= 1) {
+    console.log(flag);
+    /* altezza in pixel. il this non è necessario perchè è già sottointeso l'oggetto globale, che
+    è Window (la W maiuscola! che contiene tutto il resto (document, window...)) */
+    const pageTotalHeight = this.document.body.scrollHeight;
+    /* altezza attuale della finestra in termini assoluti (non dov'è rispetto alla pagina) */
+    const windowHeight = this.window.innerHeight;
+    /* di quanti pixel ho scrollato in giù da inizio pagina */
+    const scrollPosition = this.window.scrollY;
+
+    console.log(pageTotalHeight - (windowHeight + scrollPosition));
+    if (pageTotalHeight - (windowHeight + scrollPosition + 5) <= 0) {
+      console.log("valutazione")
+      const event = new Event(`generateMoreAnimeOnBottom`);
+      window.dispatchEvent(event);
+    }
+  }
+});
+
+window.addEventListener(`generateMoreAnimeOnBottom`, function() {
+  console.log("ciao");
+  searchAnime(20*flag);
+});
 
 /* Funzioni di conversione dei dati */
 
