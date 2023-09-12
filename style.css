@@ -107,10 +107,10 @@ nav {
 
 .releasemonth {
     background-color: rgb(169, 69, 200);
-    position: relative;
     width: 25%; /* ampiezza rispetto al contenitore esterno */
     display: flex;
     flex-direction: column;
+    justify-content: center;
     padding: 10px;
     height: 150px;
 }
@@ -212,7 +212,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 
 .input__container {
     position: relative;
-    padding: 20px 0;
+    padding: 20px 0 5px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,6 +232,7 @@ input[type="range"]:active::-webkit-slider-thumb {
 .genrescenter {
     display: flex;
     align-items: center;
+    flex-direction: column;
     height: 100%;
 }
 
@@ -514,20 +515,24 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     h2 {
         font-size: 20px;
     }
+    h3 {
+        margin-bottom: 10px;
+    }
     .header__presentation--input {
         width: 95%;
         margin: 10px;
     }
     .releasemonth {
         width: 100%;
-        height: 150px;
+        height: 100%;
     }
     .genres {
         width: 100%;
+        height: 100%;
     }
     .episodes {
         width: 100%;
-        height: 100px;
+        height: 100%;
     }
     .rating {
         width: 100%;
@@ -538,5 +543,11 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     }
     .btn {
         padding: 5px 16px;
+    }
+    .genres__container {
+        flex-direction: row;
+    }
+    .autocomplete {
+        padding: 10px;
     }
 }
