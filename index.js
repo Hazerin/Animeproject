@@ -411,6 +411,14 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
 
   let count = 0;
 
+  if (secondOrMoreGen != 0) {
+    document.querySelectorAll(`.anime`).forEach (x => {
+      x.classList.remove(`anime--left`);
+      x.classList.remove(`anime--right`);
+      x.classList.remove(`anime--center`);
+    });
+  }
+
   while (i < post.length) {
 
     if (count >= noOfAnimeToSearch) {
@@ -421,11 +429,18 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
     && ((genre === undefined || genre === ``) || evaluateGenre(genre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
     && ((excludedgenre === undefined || excludedgenre === ``) || !evaluateGenre(excludedgenre, post[i].data.genres, post[i].data.themes, post[i].data.demographics))
     && (post[i].data.score >= halfstars && countSequelEpisodes(post[i].data) >= episodes)) {
-    animelist.innerHTML += `<div class="anime">
-    <a href="${post[i].data.url}" target="_blank">
-    <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
-    <div class="anime__title">
-    <p class="anime__title--text">${post[i].data.title}</p></div></div></a>`;
+    if (secondOrMoreGen != 0) {
+      addAnime(animelist, ``);
+    }  
+    else if (count % 5 === 0 || count % 5 === 1) {
+      addAnime(animelist, `anime--left`);
+    }
+    else if (count % 5 === 2) {
+      addAnime(animelist, `anime--center`);
+    }
+    else if (count % 5 === 3 || count % 5 === 4) {
+      addAnime(animelist, `anime--right`);
+    }
     count++;
     }
     i++;
@@ -493,13 +508,6 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
 
   flag++;
 
-  /* Stampo più volte lo sfondo per coprire il bianco che avrebbe altrimenti lo sfondo */
-
-  if (true) {
-
-  };
-
-
   /* Registra l'observer per ciascun elemento .anime__title
   map va usato quando bisogna ritornare un nuovo array, forEach se non c'è da ritornare nulla!
   Metodo non più usato in quanto ho deciso di creare un observer separato per ogni padre. */
@@ -517,13 +525,22 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
   }); */
 }
 
+/* Funzione per aggiungere la classe corretta per animare senza ripetere tante volte lo
+stesso codice */
+
+function addAnime(animelist, target) {
+  animelist.innerHTML += `<div class="anime ${target}">
+  <a href="${post[i].data.url}" target="_blank">
+  <img class="anime__poster" src="${post[i].data.images.jpg.large_image_url}" alt=""> 
+  <div class="anime__title">
+  <p class="anime__title--text">${post[i].data.title}</p></div></div></a>`;
+}
+
 /* Funzioni per continuare la ricerca una volta arrivati alla fine della pagina */
 
 let flag = 0;
 
 window.addEventListener(`scroll`, function() {
-  
-  console.log(this.document.body.scrollHeight);
 
   if (flag >= 1) {
     /* altezza in pixel. il this non è necessario perchè è già sottointeso l'oggetto globale, che
@@ -544,7 +561,7 @@ window.addEventListener(`scroll`, function() {
 });
 
 window.addEventListener(`generateMoreAnimeOnBottom`, function() {
-  searchAnime(20*flag, 1);
+  searchAnime(20, 1);
 });
 
 /* Funzioni di conversione dei dati */
@@ -694,7 +711,7 @@ function toNumeric(number) {
   if (number.replace(/[!-/:-~]/g,``).length === 1) {
     return document.querySelector(".numeric_rating--inner").value = number.replace(/[!-/:-~]/g,``);
   }
-  else if (number = 10) {
+  else if (number === `10`) {
     return number;
   }
   else if (!(number[1] === `,`) && !(number[1] === `.`)) {

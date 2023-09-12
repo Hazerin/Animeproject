@@ -400,13 +400,55 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
 }
 
 .anime {
+    position: relative;
+    background-color: blue;
     width: 20%;
     height: 400px;
 }
 
-.anime {
-    position: relative;
-    background-color: blue;
+.anime--left {
+    animation: fromleftslide 500ms ease-out;
+}
+
+.anime--center {
+    animation: fromcenter 500ms ease-out;
+}
+
+.anime--right {
+    animation: fromrightside 500ms ease-out;
+}
+
+@keyframes fromleftslide {
+    0% {
+        opacity: 0.5;
+        transform: translateX(-30vw);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fromcenter {
+    0% {
+        opacity: 0.5;
+        transform: translateY(50vh);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fromrightside {
+    0% {
+        opacity: 0.5;
+        transform: translateX(+30vw);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .anime__poster {
