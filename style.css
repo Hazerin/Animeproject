@@ -480,6 +480,12 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
 }
 
 @media (max-width: 1050px) {
+    h1 {
+        font-size: 28px;
+    }
+    h2 {
+        font-size: 20px;
+    }
     .releasemonth {
         width: 50%;
     }
@@ -494,5 +500,32 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     }
     .anime {
         width: calc(100%/3);
+    }
+}
+
+@media (max-width: 515px) {
+    h1 {
+        font-size: 28px;
+    }
+    h2 {
+        font-size: 20px;
+    }
+    .releasemonth {
+        width: 100%;
+        height: 150px;
+    }
+    .genres {
+        width: 100%;
+    }
+    .episodes {
+        width: 100%;
+        height: 100px;
+    }
+    .rating {
+        width: 100%;
+    }
+    .anime {
+        width: calc(100%/3);
+        height: 200px;
     }
 }
