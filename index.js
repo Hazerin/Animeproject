@@ -431,15 +431,24 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
     && (post[i].data.score >= halfstars && countSequelEpisodes(post[i].data) >= episodes)) {
     if (secondOrMoreGen != 0) {
       addAnime(animelist, ``);
-    }  
-    else if (count % 5 === 0 || count % 5 === 1) {
-      addAnime(animelist, `anime--left`);
     }
-    else if (count % 5 === 2) {
-      addAnime(animelist, `anime--center`);
+    if (window.screen.width <= 1050 && secondOrMoreGen === 0) {
+      if (count % 3 === 0) {
+        addAnime(animelist, `anime--left`);
+      }
+      else if (count % 3 === 1) {
+        addAnime(animelist, `anime--center`);
+      }
+      else addAnime(animelist, `anime--right`);
     }
-    else if (count % 5 === 3 || count % 5 === 4) {
-      addAnime(animelist, `anime--right`);
+    else if (secondOrMoreGen === 0){
+      if (count % 5 === 0 || count % 5 === 1) {
+        addAnime(animelist, `anime--left`);
+      }
+      else if (count % 5 === 2) {
+        addAnime(animelist, `anime--center`);
+      }
+      else addAnime(animelist, `anime--right`);
     }
     count++;
     }
