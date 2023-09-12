@@ -486,6 +486,10 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     h2 {
         font-size: 20px;
     }
+    .header__presentation--input {
+        width: 80%;
+        margin: 20px;
+    }
     .releasemonth {
         width: 50%;
     }
@@ -510,6 +514,10 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     h2 {
         font-size: 20px;
     }
+    .header__presentation--input {
+        width: 95%;
+        margin: 10px;
+    }
     .releasemonth {
         width: 100%;
         height: 150px;
@@ -526,6 +534,9 @@ Pointer-events: none per poter cliccare entrambe le metà di stella. */
     }
     .anime {
         width: calc(100%/3);
-        height: 200px;
+        height: 220px;
+    }
+    .btn {
+        padding: 5px 16px;
     }
 }

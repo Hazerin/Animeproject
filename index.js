@@ -384,6 +384,11 @@ function searchAnime(noOfAnimeToSearch, secondOrMoreGen) {
   console.log(halfstars);
   console.log(title);
 
+  for (let j = 5; j < 5; j++) {
+    console.log("ciao");
+    console.log(window.screen.width);
+  }
+
   /* gli Observer rimangono e rivelano che l'elemento che contengono non è più contenuto nel genitore quando l'HTML
     viene cancellato e poi riscritto. Questo perchè gli observer uscendo dalla funzione NON vengono eliminati perchè stanno
     puntando a qualcosa (gli elementi HTML che ho creato). Quindi devo sconnetterli ed eliminarli un attimo
